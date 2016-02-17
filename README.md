@@ -1,7 +1,6 @@
 ##600.468 Spring 2016 Assignment 2
 
-##$Jordan Matelsky & Adam Poliak
-
+###Jordan Matelsky & Adam Poliak
 ### This is our implementation of 600.468 Assignment 2, http://mt-class.org/jhu/hw1.html
 
 There are three python programs here (`-h` for usage):

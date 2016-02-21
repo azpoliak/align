@@ -36,11 +36,15 @@ bitext = [[sentence.strip().split() for sentence in pair]
 
 converge = False
 
-t = defaultdict(int)
+t = defaultdict(Decimal)
+for (n, (f,e)) in enumerate(bitext):
+    for f_i in set(f):
+        f_count[f_i] = 0
+
 for (n, (f,e)) in enumerate(bitext):
     for f_i in set(f):
         for e_j in set(e):
-            t[(f_i, e_j)] = 1.0 / len(e)
+            t[(f_i, e_j)] = 1.0 / len(f_count)
 x = 0
 
 while x < 100:

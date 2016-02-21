@@ -8,15 +8,15 @@ from collections import defaultdict
 def sorte(t):
   return sorted(t.items(), key=operator.itemgetter(1))
 
-def generate_bitext(f_data, e_data):
-    bitext = [[sentence.strip().split() for sentence in pair]
-        for pair in zip(open(f_data), open(e_data))[:opts.num_sents]]
+def generate_bitext(f_data, e_data, num_sents):
+    return [[sentence.strip().split() for sentence in pair]
+        for pair in zip(open(f_data), open(e_data))[:num_sents]]
 
-def train(f_data, e_data):
+def train(f_data, e_data, num_sents):
     IGNORED = '1 2 3 4 5 6 7 8 9 0 $ ( ) [ ] ? ! . - ,'.split(' ')
  
     sys.stderr.write("Training via IBM 1...")
-    bitext = generate_bitext(f_data, e_data)
+    bitext = generate_bitext(f_data, e_data, num_sents)
 
     converge = False
 
@@ -42,9 +42,9 @@ def train(f_data, e_data):
     perf_match = defaultdict(str)
 
     for (n, (f, e)) in enumerate(bitext):
-        sys.stderr.write(str(n) + '\n')
+        #sys.stderr.write(str(n) + '\n')
         for f_i in set(f):
-            t[f_i] = 0
+            #t[f_i] = 0
             f_count[f_i] += 1
             for e_j in set(e):
                 fe_count[(f_i, e_j)] += 1
@@ -89,15 +89,29 @@ def train(f_data, e_data):
     return t
 
 def merge_maps(t1, t2):
-    return 0
+    matches = {}
+    t1 = sorte(t1)
+    t2 = sorte(t2)
+    while t1:
+        curr = t1[-1]
+        backwards = reversed(curr[0])
+        if backwards in t2:
+            prob_sum = curr[1] + t2[[i[0] for i in t2].index(backwards)][1] #gives us the backwards probability
+            if prob_sum > 1.5:
+                matches[curr[0]] = curr[1] 
+        t1.pop()
 
-def generate_a(f_data, e_data, t):
+    pdb.set_trace()
+
+    return matches
+
+def generate_a(f_data, e_data, t, threshold=.5):
     bitext = generate_bitext(f_data, e_data)
 
     for (f, e) in bitext:
         for (i, f_i) in enumerate(f):
             for (j, e_j) in enumerate(e):
-                if t[(f_i, e_j)] >= opts.threshold:
+                if t[(f_i, e_j)] >= threshold:
                     sys.stdout.write("%i-%i " % (i, j))
         sys.stdout.write("\n")
 
@@ -130,13 +144,14 @@ def main():
     f_data = "%s.%s" % (opts.train, opts.french)
     e_data = "%s.%s" % (opts.train, opts.english)
 
-    f_e = train(f_data, e_data)
-    e_f = train(e_data, f_data)
+    f_e = train(f_data, e_data, opts.num_sents)
+    e_f = train(e_data, f_data, opts.num_sents)
 
-    generate_a(f_data, e_data, merge_maps(f_e, e_f))
+    generate_a(f_data, e_data, merge_maps(f_e, e_f), opts.threshold)
 
 
-
+if __name__ == '__main__':
+    main()
 
 
 

@@ -74,7 +74,7 @@ for (n, (f, e)) in enumerate(bitext):
         s[key] += fe_count[key]
 x = 0
 
-while x < 1000:
+while not converge:
 
     print x
 
@@ -92,9 +92,8 @@ while x < 1000:
             for e_j in e:
                 t[(f_i, e_j)] = fe_count[(f_i, e_j)] / tot_f[f_i]
 
-    print max(t.iteritems(), key=operator.itemgetter(1))
-
-    #converge = True
+    if max(t.iteritems(), key=operator.itemgetter(1))[1] >= opts.threshold:
+        converge = True
     x += 1
 pdb.set_trace()
 

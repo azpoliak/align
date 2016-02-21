@@ -36,6 +36,7 @@ bitext = [[sentence.strip().split() for sentence in pair]
 
 converge = False
 
+f_count = defaultdict(int)
 t = defaultdict(Decimal)
 for (n, (f,e)) in enumerate(bitext):
     for f_i in set(f):
@@ -45,57 +46,57 @@ for (n, (f,e)) in enumerate(bitext):
     for f_i in set(f):
         for e_j in set(e):
             t[(f_i, e_j)] = 1.0 / len(f_count)
+
+
+e_count = defaultdict(int)
+fe_count = defaultdict(int)
+s = defaultdict(Decimal)
+tot_fe_count = 0.0
+tot_f = defaultdict(float)
+
+for (n, (f, e)) in enumerate(bitext):
+    print n
+    for f_i in set(f):
+        t[f_i] = 0
+        f_count[f_i] += 1
+        for e_j in set(e):
+            fe_count[(f_i, e_j)] += 1
+            tot_fe_count += 1
+            s[(f_i, e_j)] = 0
+    for e_j in set(e):
+        e_count[e_j] += 1
+    if n % 100 == 0:
+        sys.stderr.write(".")
+
+    #Normalization
+    for key in fe_count:
+        fe_count[key] = fe_count[key] / tot_fe_count
+        s[key] += fe_count[key]
 x = 0
 
-while x < 100:
+while x < 1000:
 
-    f_count = defaultdict(int)
-    e_count = defaultdict(int)
-    fe_count = defaultdict(int)
-    s = defaultdict(Decimal)
-    tot_fe_count = 0
+    print x
 
     for (n, (f, e)) in enumerate(bitext):
-        for f_i in set(f):
-            t[f_i] = 0
-            f_count[f_i] += 1
-            for e_j in set(e):
-                fe_count[(f_i, e_j)] += 1
-                tot_fe_count += 1
-                s[(f_i, e_j)] = 0
-        for e_j in set(e):
-            e_count[e_j] += 1
-        if n % 100 == 0:
-            sys.stderr.write(".")
-
-        #Normalization
-        for key in fe_count:
-            fe_count[key] = fe_count[key] / tot_fe_count
-            s[key] += fe_count[key]
-
         #Collecting counts
         e = set(e)
         f = set(f)
         for e_j in e:
             for f_i in f:
-                fe_count[(f_i, e_j)] += t[(f_i, e_j)] / (s[(f_i, e_j)] - e_count[e_j])
-                t[f_i] += t[(f_i, e_j)] / (s[(f_i, e_j)] - e_count[e_j])
+                fe_count[(f_i, e_j)] += t[(f_i, e_j)] / (s[(f_i, e_j)])
+                tot_f[f_i] += t[(f_i, e_j)] / (s[(f_i, e_j)])
 
         #estimate probabilities
         for f_i in f:
             for e_j in e:
-                t[(f_i, e_j)] = fe_count[(f_i, e_j)] / t[f_i]
+                t[(f_i, e_j)] = fe_count[(f_i, e_j)] / tot_f[f_i]
 
-    print min(t.iteritems(), key=operator.itemgetter(1))
+    print max(t.iteritems(), key=operator.itemgetter(1))
 
     #converge = True
-
-    neg = 0
-    for key in t:
-        if t[key] < 0:
-            neg += 1
-    print neg
     x += 1
+pdb.set_trace()
 
 
 

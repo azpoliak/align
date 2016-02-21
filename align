@@ -47,8 +47,10 @@ for (n, (f,e)) in enumerate(bitext):
 
 for (n, (f,e)) in enumerate(bitext):
     for f_i in set(f):
-        for e_j in set(e):
-            t[(f_i, e_j)] = 1.0 / len(f_count)
+        if f_i not in IGNORED:
+            for e_j in set(e):
+                if e_j not in IGNORED:
+                    t[(f_i, e_j)] = 1.0 / len(f_count)
 
 
 e_count = defaultdict(int)

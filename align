@@ -4,6 +4,8 @@ from decimal import Decimal
 import sys
 from collections import defaultdict
 
+IGNORED = '( ) [ ] ? ! . - ,'.split(' ')
+
 optparser = optparse.OptionParser()
 optparser.add_option("-d", "--data",
                      dest="train",
@@ -40,7 +42,8 @@ f_count = defaultdict(int)
 t = defaultdict(Decimal)
 for (n, (f,e)) in enumerate(bitext):
     for f_i in set(f):
-        f_count[f_i] = 0
+        if f_i not in IGNORED:
+            f_count[f_i] = 0
 
 for (n, (f,e)) in enumerate(bitext):
     for f_i in set(f):

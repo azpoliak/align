@@ -22,16 +22,16 @@ def train(f_data, e_data, num_sents):
 
     f_count = defaultdict(int)
     t = defaultdict(float)
-    for (n, (f,e)) in enumerate(bitext):
-        for f_i in set(f):
-            f_count[f_i] = 0
+    #for (n, (f,e)) in enumerate(bitext):
+    #    for f_i in set(f):
+    #        f_count[f_i] = 0
 
     for (n, (f,e)) in enumerate(bitext):
         for f_i in set(f):
             if f_i not in IGNORED:
                 for e_j in set(e):
                     if e_j not in IGNORED:
-                        t[(f_i, e_j)] = 1.0 / len(f_count)
+                        t[(f_i, e_j)] = 1.0 / len(e)
 
 
     e_count = defaultdict(int)
@@ -44,6 +44,8 @@ def train(f_data, e_data, num_sents):
     for (n, (f, e)) in enumerate(bitext):
         #sys.stderr.write(str(n) + '\n')
         for f_i in set(f):
+            tot_fe_count = 0.0
+
             #t[f_i] = 0
             f_count[f_i] += 1
             for e_j in set(e):
@@ -71,6 +73,7 @@ def train(f_data, e_data, num_sents):
             f.difference_update(IGNORED) 
             for e_j in e:
                 for f_i in f:
+                    #pdb.set_trace()
                     fe_count[(f_i, e_j)] += t[(f_i, e_j)] / (s[(f_i, e_j)])
                     tot_f[f_i] += t[(f_i, e_j)] / (s[(f_i, e_j)])
 
@@ -100,8 +103,6 @@ def merge_maps(t1, t2):
             if prob_sum > 1.5:
                 matches[curr[0]] = curr[1] 
         t1.pop()
-
-    pdb.set_trace()
 
     return matches
 
@@ -145,9 +146,11 @@ def main():
     e_data = "%s.%s" % (opts.train, opts.english)
 
     f_e = train(f_data, e_data, opts.num_sents)
-    e_f = train(e_data, f_data, opts.num_sents)
+    #e_f = train(e_data, f_data, opts.num_sents)
 
-    generate_a(f_data, e_data, merge_maps(f_e, e_f), opts.threshold)
+    pdb.set_trace()
+
+    generate_a(f_data, e_data, f_e, opts.threshold)#merge_maps(f_e, e_f), opts.threshold)
 
 
 if __name__ == '__main__':

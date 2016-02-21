@@ -4,7 +4,11 @@ from decimal import Decimal
 import sys
 from collections import defaultdict
 
-IGNORED = '( ) [ ] ? ! . - ,'.split(' ')
+
+def sorte(t):
+  return sorted(t.items(), key=operator.itemgetter(1))
+
+IGNORED = '1 2 3 4 5 6 7 8 9 0 $ ( ) [ ] ? ! . - ,'.split(' ')
 
 optparser = optparse.OptionParser()
 optparser.add_option("-d", "--data",
@@ -39,11 +43,10 @@ bitext = [[sentence.strip().split() for sentence in pair]
 converge = False
 
 f_count = defaultdict(int)
-t = defaultdict(Decimal)
+t = defaultdict(float)
 for (n, (f,e)) in enumerate(bitext):
     for f_i in set(f):
-        if f_i not in IGNORED:
-            f_count[f_i] = 0
+        f_count[f_i] = 0
 
 for (n, (f,e)) in enumerate(bitext):
     for f_i in set(f):
@@ -55,7 +58,7 @@ for (n, (f,e)) in enumerate(bitext):
 
 e_count = defaultdict(int)
 fe_count = defaultdict(int)
-s = defaultdict(Decimal)
+s = defaultdict(float)
 tot_fe_count = 0.0
 tot_f = defaultdict(float)
 
@@ -86,7 +89,9 @@ while not converge:
     for (n, (f, e)) in enumerate(bitext):
         #Collecting counts
         e = set(e)
+        e.difference_update(IGNORED)
         f = set(f)
+        f.difference_update(IGNORED) 
         for e_j in e:
             for f_i in f:
                 fe_count[(f_i, e_j)] += t[(f_i, e_j)] / (s[(f_i, e_j)])

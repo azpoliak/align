@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-import optparse
+import optparse, pdb, math, operator
+from decimal import Decimal
 import sys
 from collections import defaultdict
 
@@ -32,20 +33,71 @@ e_data = "%s.%s" % (opts.train, opts.english)
 sys.stderr.write("Training with Dice's coefficient...")
 bitext = [[sentence.strip().split() for sentence in pair]
           for pair in zip(open(f_data), open(e_data))[:opts.num_sents]]
-f_count = defaultdict(int)
-e_count = defaultdict(int)
-fe_count = defaultdict(int)
 
-for (n, (f, e)) in enumerate(bitext):
+converge = False
+
+t = defaultdict(int)
+for (n, (f,e)) in enumerate(bitext):
     for f_i in set(f):
-        f_count[f_i] += 1
         for e_j in set(e):
-            fe_count[(f_i, e_j)] += 1
-    for e_j in set(e):
-        e_count[e_j] += 1
-    if n % 500 == 0:
-        sys.stderr.write(".")
+            t[(f_i, e_j)] = 1.0 / len(e)
+x = 0
 
+while x < 10:
+
+    f_count = defaultdict(int)
+    e_count = defaultdict(int)
+    fe_count = defaultdict(int)
+    s = defaultdict(Decimal)
+    tot_fe_count = 0
+
+    for (n, (f, e)) in enumerate(bitext):
+        for f_i in set(f):
+            t[f_i] = 0
+            f_count[f_i] += 1
+            for e_j in set(e):
+                fe_count[(f_i, e_j)] += 1
+                tot_fe_count += 1
+                s[(f_i, e_j)] = 0
+        for e_j in set(e):
+            e_count[e_j] += 1
+        if n % 100 == 0:
+            sys.stderr.write(".")
+
+        #Normalization
+        for key in fe_count:
+            fe_count[key] = fe_count[key] / tot_fe_count
+            s[key] += fe_count[key]
+
+        #Collecting counts
+        e = set(e)
+        f = set(f)
+        for e_j in e:
+            for f_i in f:
+                fe_count[(f_i, e_j)] += t[(f_i, e_j)] / (s[(f_i, e_j)] - e_count[e_j])
+                t[f_i] += t[(f_i, e_j)] / (s[(f_i, e_j)] - e_count[e_j])
+
+        #estimate probabilities
+        for f_i in f:
+            for e_j in e:
+                t[(f_i, e_j)] = fe_count[(f_i, e_j)] / t[f_i]
+
+    print max(t.iteritems(), key=operator.itemgetter(1))
+
+    #converge = True
+
+    neg = 0
+    for key in t:
+        if t[key] < 0:
+            neg += 1
+    print neg
+    x += 1
+
+            
+
+
+
+'''
 dice = defaultdict(int)
 for (k, (f_i, e_j)) in enumerate(fe_count.keys()):
     dice[(f_i, e_j)] = 2.0 * fe_count[(f_i, e_j)] / (f_count[f_i] + e_count[e_j])
@@ -59,3 +111,4 @@ for (f, e) in bitext:
             if dice[(f_i, e_j)] >= opts.threshold:
                 sys.stdout.write("%i-%i " % (i, j))
     sys.stdout.write("\n")
+'''

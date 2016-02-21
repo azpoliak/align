@@ -26,15 +26,15 @@ def train(f_data, e_data, num_sents):
     #    for f_i in set(f):
     #        f_count[f_i] = 0
 
-    for (n, (f,e)) in enumerate(bitext):
+    '''for (n, (f,e)) in enumerate(bitext):
         for f_i in set(f):
             if f_i not in IGNORED:
                 for e_j in set(e):
                     if e_j not in IGNORED:
                         t[(f_i, e_j)] = 1.0 / len(e)
+    '''
 
 
-    e_count = defaultdict(int)
     fe_count = defaultdict(int)
     s = defaultdict(float)
     tot_fe_count = 0.0
@@ -43,6 +43,8 @@ def train(f_data, e_data, num_sents):
 
     for (n, (f, e)) in enumerate(bitext):
         #sys.stderr.write(str(n) + '\n')
+        curr_fes = []
+        e_count = defaultdict(int)
         for f_i in set(f):
             tot_fe_count = 0.0
 
@@ -50,20 +52,26 @@ def train(f_data, e_data, num_sents):
             f_count[f_i] += 1
             for e_j in set(e):
                 fe_count[(f_i, e_j)] += 1
+                t[(f_i, e_j)] = 1.0 / len(e)
                 tot_fe_count += 1
                 s[(f_i, e_j)] = 0
-        #for e_j in set(e):
-            #e_count[e_j] += 1
+                curr_fes.append((f_i, e_j))
+        for e_j in set(e):
+            if e_j not in e_count:
+                e_count[e_j] = 0.0
+            e_count[e_j] += 1
         if n % 100 == 0:
             sys.stderr.write(".")
 
         #Normalization
-        for key in fe_count:
-            fe_count[key] = fe_count[key] / tot_fe_count
-            s[key] += fe_count[key]
+        for tup in curr_fes:
+            #fe_count[tup] = fe_count[tup] / e_count[tup[1]]
+            s[tup] += fe_count[tup]
     x = 0
 
-    while x < 5:
+    while x < 50:
+
+        sys.stderr.write(str(x))
 
         for (n, (f, e)) in enumerate(bitext):
             #Collecting counts
@@ -89,6 +97,7 @@ def train(f_data, e_data, num_sents):
             #converge = True
         x += 1
 
+    pdb.set_trace()
     return t
 
 def merge_maps(t1, t2):
@@ -106,8 +115,8 @@ def merge_maps(t1, t2):
 
     return matches
 
-def generate_a(f_data, e_data, t, threshold=.5):
-    bitext = generate_bitext(f_data, e_data)
+def generate_a(f_data, e_data, t, num_sents, threshold=.5,):
+    bitext = generate_bitext(f_data, e_data, num_sents)
 
     for (f, e) in bitext:
         for (i, f_i) in enumerate(f):
@@ -148,9 +157,7 @@ def main():
     f_e = train(f_data, e_data, opts.num_sents)
     #e_f = train(e_data, f_data, opts.num_sents)
 
-    pdb.set_trace()
-
-    generate_a(f_data, e_data, f_e, opts.threshold)#merge_maps(f_e, e_f), opts.threshold)
+    generate_a(f_data, e_data, f_e, opts.num_sents, opts.threshold)#merge_maps(f_e, e_f), opts.threshold)
 
 
 if __name__ == '__main__':

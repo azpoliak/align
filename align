@@ -30,7 +30,7 @@ optparser.add_option("-n", "--num_sentences",
 f_data = "%s.%s" % (opts.train, opts.french)
 e_data = "%s.%s" % (opts.train, opts.english)
 
-sys.stderr.write("Training with Dice's coefficient...")
+sys.stderr.write("Training via IBM 1...")
 bitext = [[sentence.strip().split() for sentence in pair]
           for pair in zip(open(f_data), open(e_data))[:opts.num_sents]]
 
@@ -43,7 +43,7 @@ for (n, (f,e)) in enumerate(bitext):
             t[(f_i, e_j)] = 1.0 / len(e)
 x = 0
 
-while x < 10:
+while x < 100:
 
     f_count = defaultdict(int)
     e_count = defaultdict(int)
@@ -82,7 +82,7 @@ while x < 10:
             for e_j in e:
                 t[(f_i, e_j)] = fe_count[(f_i, e_j)] / t[f_i]
 
-    print max(t.iteritems(), key=operator.itemgetter(1))
+    print min(t.iteritems(), key=operator.itemgetter(1))
 
     #converge = True
 
@@ -93,7 +93,7 @@ while x < 10:
     print neg
     x += 1
 
-            
+
 
 
 

@@ -64,7 +64,7 @@ tot_f = defaultdict(float)
 perf_match = defaultdict(str)
 
 for (n, (f, e)) in enumerate(bitext):
-    sys.stderr.write(str(n) + '\n')
+    fe_curr = []
     for f_i in set(f):
         t[f_i] = 0
         f_count[f_i] += 1
@@ -72,18 +72,19 @@ for (n, (f, e)) in enumerate(bitext):
             fe_count[(f_i, e_j)] += 1
             tot_fe_count += 1
             s[(f_i, e_j)] = 0
+            fe_curr.append((f_i, e_j))
     #for e_j in set(e):
         #e_count[e_j] += 1
     if n % 100 == 0:
         sys.stderr.write(".")
 
     #Normalization
-    for key in fe_count:
-        fe_count[key] = fe_count[key] / tot_fe_count
+    for key in fe_curr:
+        fe_count[key] = fe_count[key] / float(len(fe_count))#tot_fe_count
         s[key] += fe_count[key]
 x = 0
 
-while x < 5:
+while x < 10:
 
     for (n, (f, e)) in enumerate(bitext):
         #Collecting counts
@@ -108,12 +109,30 @@ while x < 5:
         #converge = True
     x += 1
 
+
+'''
+for f in tot_f.keys():
+    try:
+        lst = [(item, t[item]) for item in t if item[0]==f and item[1]=='the']
+        for x in lst:
+            del t[x[0]]
+    except:
+        continue
+    #lst.sort(key=operator.itemgetter(1))
+    #for x in lst[:-5]:
+        #if x in t:
+            #del t[item]
+'''
+
+#pdb.set_trace()
+
 for (f, e) in bitext:
     for (i, f_i) in enumerate(f):
         for (j, e_j) in enumerate(e):
             if t[(f_i, e_j)] >= opts.threshold:
                 sys.stdout.write("%i-%i " % (i, j))
     sys.stdout.write("\n")
+
 
 
 

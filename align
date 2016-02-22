@@ -53,7 +53,7 @@ for (n, (f,e)) in enumerate(bitext):
         if f_i not in IGNORED:
             for e_j in set(e):
                 if e_j not in IGNORED:
-                    t[(f_i, e_j)] = 1.0 / len(f_count)
+                    t[(f_i, e_j)] = 1.0 / len(e)#len(f_count)
 
 
 e_count = defaultdict(int)
@@ -66,21 +66,21 @@ perf_match = defaultdict(str)
 for (n, (f, e)) in enumerate(bitext):
     fe_curr = []
     for f_i in set(f):
-        t[f_i] = 0
+        #t[f_i] = 0
         f_count[f_i] += 1
         for e_j in set(e):
             fe_count[(f_i, e_j)] += 1
             tot_fe_count += 1
             s[(f_i, e_j)] = 0
             fe_curr.append((f_i, e_j))
-    #for e_j in set(e):
-        #e_count[e_j] += 1
+    for e_j in set(e):
+        e_count[e_j] += 1
     if n % 100 == 0:
         sys.stderr.write(".")
 
     #Normalization
     for key in fe_curr:
-        fe_count[key] = fe_count[key] / float(len(fe_count))#tot_fe_count
+        fe_count[key] = fe_count[key] / tot_fe_count
         s[key] += fe_count[key]
 x = 0
 
@@ -109,6 +109,7 @@ while x < 10:
         #converge = True
     x += 1
 
+#pdb.set_trace()
 
 '''
 for f in tot_f.keys():

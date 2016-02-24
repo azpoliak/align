@@ -118,6 +118,7 @@ def main():
             if t2[(f_i, e_j)] > opts.threshold + t1[(e_j, f_i)] > opts.threshold:
                 sys.stdout.write("%i-%i " % (i, j))
     sys.stdout.write("\n")
+
 '''
 
 if __name__ == '__main__':

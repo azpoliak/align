@@ -12,7 +12,7 @@ optparser.add_option("-n", "--num_display", dest="n", default=sys.maxint, type="
 f_data = "%s.%s" % (opts.train, opts.french)
 e_data = "%s.%s" % (opts.train, opts.english)
 a_data = "%s.%s" % (opts.train, opts.alignment)
-    
+
 (size_a, size_s, size_a_and_s, size_a_and_p) = (0.0,0.0,0.0,0.0)
 for (i, (f, e, g, a)) in enumerate(zip(open(f_data), open(e_data), open(a_data), sys.stdin)):
   fwords = f.strip().split()

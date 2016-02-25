@@ -23,7 +23,7 @@ def train(f_vocab, e_vocab, bitext):
 
   sys.stderr.write("Start...")
 
-  for _ in range(5):
+  for _ in range(10):
     for e_j in e_vocab:
       for f_i in f_vocab:
         fe_count[(f_i,e_j)] = 0

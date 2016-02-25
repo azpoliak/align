@@ -52,7 +52,8 @@ def train(f_vocab, e_vocab, bitext):
 
   return t
 
-
+def smart_merge_divide(fe, ef, j, i):
+  return ((fe + ef) / (math.fabs(j - i) + 1))
 
 def main():
 
@@ -93,8 +94,9 @@ def main():
     for (i, f_i) in enumerate(f):
         best = [[], '', 0.0]
         for (j, e_j) in enumerate(e):
-            if t1[(f_i, e_j)] + t2[(e_j, f_i)] > best[2]:
-              best[2] = t1[(f_i, e_j)]  + t2[(e_j, f_i)]
+            curr = smart_merge_divide(t1[(f_i, e_j)], t2[(e_j, f_i)], i, j)
+            if curr > best[2]:
+              best[2] =  curr
               best[1] = e_j
               best[0] = [j]
             elif t1[(f_i, e_j)] == best[2]:
@@ -102,8 +104,8 @@ def main():
         found = False
         diffs = best[0]
         for x in range(len(diffs)):
-          if math.fabs(diffs[x] - i) < 4:
-            sys.stdout.write("%i-%i " % (i, diffs[x]))
+          #if math.fabs(diffs[x] - i) < 4:
+          sys.stdout.write("%i-%i " % (i, diffs[x]))
         #pdb.set_trace()
     sys.stdout.write("\n")
 

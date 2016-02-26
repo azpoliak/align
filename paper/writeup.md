@@ -91,7 +91,7 @@ We collected metrics over a variety of runs. The timing data are averaged over s
 
 ![fig1](figure_1.png)
 
-> On the left, green represents AER, red represents recall, and blue represents precision. The code used to generate this figure is available in `generate_table1.py`.
+> x: Number of sentences. y: Value. On the left, green represents AER, red represents recall, and blue represents precision. The code used to generate this figure is available in `generate_table1.py`. On the right, black points mark the time taken to calculate that many sentences, using 5 iterations. The calculation is clearly superlinear. We predict approximately $O(n^3)$.
 
 -----
 <b id="f1">1</b> Our implementation is derived in general from the text available [here](http://www.statmt.org/book/slides/04-word-based-models.pdf).  [↩](#a1)

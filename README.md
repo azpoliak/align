@@ -82,19 +82,23 @@ In this case, word alignments that are close to the same index (low $|j-i|$), su
 ## Results
 
 Here is a table describing our results for running our modified IBM Model 1 implementation
+'''
 | Training data size        | 1k lines   | 10k lines  | 100k lines
 | ------------- |:-------------:| -----:|
 | Precision      |  0.582734 |  0.682152 |
 | Recall     | 0.488166      |  0.573964 |
 | AER | 0.459603  |    0.366801 |
+'''
 
 
 Here is a table describing our results for running our modified IBM Model 1 implementation after combining the $e→f$ and $f→e$ lookups.
+'''
 | Training data size        | 1k lines   | 10k lines  | 20k lines | 50k lines | 100k lines
 | ------------- |:-------------:| -----:|
 | Precision      |  0.595007 |  0.663435 | 0.672199 | 0.673130 | 0.684211 | 
 | Recall     | 0.748521      |  0.849112 | 0.866864 | 0.872781 | 0.881657 |
 | AER | 0.355996  |    0.277358 | 0.265787 | 0.263208 | 0.252830 |
+'''
 
 As seen in the table above, our IBM Model 1 implementation with combining $e→f$ and $f→e$ lookups plateaus after about 10k lines of training data.
 

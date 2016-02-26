@@ -79,6 +79,27 @@ This function favors 'diagonal' sentences — sentences in which the alignment o
 ```
 In this case, word alignments that are close to the same index (low $|j-i|$), such as `research` and `recherche`, are favored. With this system, a word with index $x$ aligning to a word with index $x$ has approximately twice as high a probability of being aligned to a word with index $x+1$.  This works relatively well for grammars that follow the same phrase order. However, we anticipate this algorithm being deletorious in cases where it is used to align two languages whose phrase-orders differ (`subject-verb-object` vs `object-verb-subject`, for instance) or in languages where word order is unimportant, or variable.
 
+## Results
+
+Here is a table describing our results for running our modified IBM Model 1 implementation
+| Training data size        | 1k lines   | 10k lines  | 100k lines
+| ------------- |:-------------:| -----:|
+| Precision      |  0.582734 |  0.682152 |
+| Recall     | 0.488166      |  0.573964 |
+| AER | 0.459603  |    0.366801 |
+
+
+Here is a table describing our results for running our modified IBM Model 1 implementation after combining the $e→f$ and $f→e$ lookups.
+| Training data size        | 1k lines   | 10k lines  | 20k lines | 50k lines | 100k lines
+| ------------- |:-------------:| -----:|
+| Precision      |  0.595007 |  0.663435 | 0.672199 | 0.673130 | 0.684211 | 
+| Recall     | 0.748521      |  0.849112 | 0.866864 | 0.872781 | 0.881657 |
+| AER | 0.355996  |    0.277358 | 0.265787 | 0.263208 | 0.252830 |
+
+As seen in the table above, our IBM Model 1 implementation with combining $e→f$ and $f→e$ lookups plateaus after about 10k lines of training data.
+
+#### Best modification:
+The best modification was the IBM Model 1 implementation with $e→f$ and $f→e$ lookups trained on 100k lines of the training data set. 
 
 
 ## Future Work

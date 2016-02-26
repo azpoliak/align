@@ -2,6 +2,8 @@
 Adam Poliak — apoliak1 <br>
 Jordan Matelsky — jmatels1
 
+Leaderboard submission: **j6k4m8** (and previously, *azpoliak*)
+
 -----
 
 > We intended to implement an alignment algorithm to optimize for reducing AER, basing our work primarily on the IBM Model I<sup id="a1">[1](#f1)</sup>. In the following sections, we explain **(1)** our implementation and **(2)** the specific modifications we made to IBM Model I, and the mathematical motivation behind the modifications.

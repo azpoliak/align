@@ -15,6 +15,8 @@ $$\displaystyle P(e|f) =\prod_{i} \sum_{j} P\left( a_i = j  \big{|} |e| \right) 
 
 We experimented with varying numbers of iterations over which to train our model, finally settling on $10$ iterations as a reasonable compromise between accuracy and time-complexity.
 
+The implementation of IBM Model 1 can be found in the python script "align".
+
 ## Modifications
 In order to improve the accuracy of our alignments, we chose to treat the corpus both as a $e→f$ lookup as well as a $f→e$ lookup. In this way, we were able to train in *two* directions, and then compare the results.
 
@@ -79,31 +81,7 @@ This function favors 'diagonal' sentences — sentences in which the alignment o
 ```
 In this case, word alignments that are close to the same index (low $|j-i|$), such as `research` and `recherche`, are favored. With this system, a word with index $x$ aligning to a word with index $x$ has approximately twice as high a probability of being aligned to a word with index $x+1$.  This works relatively well for grammars that follow the same phrase order. However, we anticipate this algorithm being deletorious in cases where it is used to align two languages whose phrase-orders differ (`subject-verb-object` vs `object-verb-subject`, for instance) or in languages where word order is unimportant, or variable.
 
-## Results
-
-Here is a table describing our results for running our modified IBM Model 1 implementation
-'''
-| Training data size        | 1k lines   | 10k lines  | 100k lines
-| ------------- |:-------------:| -----:|
-| Precision      |  0.582734 |  0.682152 |
-| Recall     | 0.488166      |  0.573964 |
-| AER | 0.459603  |    0.366801 |
-'''
-
-
-Here is a table describing our results for running our modified IBM Model 1 implementation after combining the $e→f$ and $f→e$ lookups.
-'''
-| Training data size        | 1k lines   | 10k lines  | 20k lines | 50k lines | 100k lines
-| ------------- |:-------------:| -----:|
-| Precision      |  0.595007 |  0.663435 | 0.672199 | 0.673130 | 0.684211 | 
-| Recall     | 0.748521      |  0.849112 | 0.866864 | 0.872781 | 0.881657 |
-| AER | 0.355996  |    0.277358 | 0.265787 | 0.263208 | 0.252830 |
-'''
-
-As seen in the table above, our IBM Model 1 implementation with combining $e→f$ and $f→e$ lookups plateaus after about 10k lines of training data.
-
-#### Best modification:
-The best modification was the IBM Model 1 implementation with $e→f$ and $f→e$ lookups trained on 100k lines of the training data set. 
+The implementation of the modified IBM Model 1 trained on a French-English model and an English-French model can be found in the python script "align_merge".
 
 
 ## Future Work
@@ -116,9 +94,35 @@ We foresee several ways in which our algorithm could be improved both in the Fre
 ## Performance Data
 We collected metrics over a variety of runs. The timing data are averaged over several runs, while the (deterministic) AER, precision, and recall remained consistent with the same parameters.
 
-![fig1](figure_1.png)
+![fig1](paper/figure_1.png)
 
 > x: Number of sentences. y: Value. On the left, green represents AER, red represents recall, and blue represents precision. The code used to generate this figure is available in `generate_table1.py`. On the right, black points mark the time taken to calculate that many sentences, using 5 iterations. The calculation is clearly superlinear. We predict approximately $O(n^3)$.
+
+## Results
+
+Here is a table describing our results for running our modified IBM Model 1 implementation
+
+| Training data size  | 1k lines   | 10k lines |
+| ------------- |-------------| -------------| 
+| Precision      |  0.582734 |  0.682152 |
+| Recall     | 0.488166      |  0.573964 |
+| AER | 0.459603  |    0.366801 |
+
+
+
+Here is a table describing our results for running our modified IBM Model 1 implementation after combining the $e→f$ and $f→e$ lookups.
+
+| Training data size        | 1k lines   | 10k lines  | 20k lines | 50k lines | 100k lines
+| ------------- |:-------------:| -----:| ------------- | ------------- | ------------- |
+| Precision      |  0.595007 |  0.663435 | 0.672199 | 0.673130 | 0.684211 | 
+| Recall     | 0.748521      |  0.849112 | 0.866864 | 0.872781 | 0.881657 |
+| AER | 0.355996  |    0.277358 | 0.265787 | 0.263208 | 0.252830 |
+
+
+As seen in the table above, our IBM Model 1 implementation with combining $e→f$ and $f→e$ lookups plateaus after about 10k lines of training data.
+
+#### Best modification:
+The best modification was the IBM Model 1 implementation with $e→f$ and $f→e$ lookups trained on 100k lines of the training data set. 
 
 -----
 <b id="f1">1</b> Our implementation is derived in general from the text available [here](http://www.statmt.org/book/slides/04-word-based-models.pdf).  [↩](#a1)
